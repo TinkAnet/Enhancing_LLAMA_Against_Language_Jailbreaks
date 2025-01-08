@@ -1,2 +1,2 @@
-# Enhancing_LLAMA-Against_Language_Jailbreaks
+# Enhancing_LLAMA_Against_Language_Jailbreaks
 Polyu Capstone Project
