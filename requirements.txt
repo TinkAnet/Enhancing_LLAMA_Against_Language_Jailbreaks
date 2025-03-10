@@ -1,0 +1,8 @@
+setuptools>=68.0.0
+wheel>=0.40.0
+numpy>=1.26.0  # Using newer version compatible with Python 3.12
+flask>=2.3.3
+python-dotenv>=1.0.0
+llamaapi>=0.1.33
+matplotlib>=3.7.2
+Requests
