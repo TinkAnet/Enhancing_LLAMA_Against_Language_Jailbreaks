@@ -6,4 +6,5 @@ python-dotenv>=1.0.0
 llamaapi>=0.1.33
 matplotlib>=3.7.2
 Requests
-colorama-0.4.6
+colorama
+ollama
