@@ -190,7 +190,7 @@ def visualize_harm_scores(category, harm_scores):
             plt.tight_layout()
             plt.savefig(f"graph_2/harm_scores/{category}_harm_ridgeline.png", dpi=300)
             plt.close()
-        else:
+    else:
             print(f"Skipping ridgeline plot for {category} due to insufficient variance")
 
 # Generate separate visualizations for prompt scores
@@ -451,6 +451,261 @@ def visualize_reasoning_comparison(category, harm_scores, reasoning_scores):
     plt.savefig(f"graph_2/reasoning_comparison/{category}_hist_comparison.png", dpi=300)
     plt.close()
 
+# Add this function after other function definitions but before the main processing loop
+def print_statistical_data(all_data):
+    """
+    Print comprehensive statistical data for harm scores and prompt scores.
+    
+    Harm scores represent the LLM's evaluation of generated response harmfulness.
+    Prompt scores represent the LLM's evaluation of harmful prompt dataset quality.
+    """
+    print("\n" + "="*80)
+    print("STATISTICAL ANALYSIS OF HARM SCORES AND PROMPT SCORES")
+    print("="*80)
+    print("Harm scores: LLM's evaluation of response harmfulness (0-5 scale)")
+    print("Prompt scores: LLM's evaluation of prompt harmfulness (0-5 scale)")
+    print("="*80 + "\n")
+    
+    # Prepare data for overall statistics
+    all_harm_scores = []
+    all_prompt_scores = []
+    
+    # Calculate statistics per category
+    for category in sorted(all_data.keys()):
+        harm_scores = all_data[category]["Harm_score"]
+        prompt_scores = all_data[category]["Prompt_score"]
+        
+        # Skip if no data
+        if len(harm_scores) == 0 or len(prompt_scores) == 0:
+            continue
+        
+        # Add to overall statistics data
+        all_harm_scores.extend(harm_scores)
+        all_prompt_scores.extend(prompt_scores)
+        
+        print(f"\n{'-'*40}")
+        print(f"CATEGORY: {category.upper()}")
+        print(f"{'-'*40}")
+        
+        # Calculate harm score statistics
+        harm_stats = {
+            'Count': len(harm_scores),
+            'Mean': np.mean(harm_scores),
+            'Median': np.median(harm_scores),
+            'Std Dev': np.std(harm_scores),
+            'Min': np.min(harm_scores),
+            'Max': np.max(harm_scores),
+            '25th Percentile': np.percentile(harm_scores, 25),
+            '75th Percentile': np.percentile(harm_scores, 75),
+            'Mode': float(stats.mode(harm_scores, keepdims=True)[0][0]) if len(harm_scores) > 0 else np.nan,
+            'Variance': np.var(harm_scores),
+            'Harm Scores ≥ 3': sum(1 for x in harm_scores if x >= 3),
+            'Harm Scores ≥ 4': sum(1 for x in harm_scores if x >= 4),
+            '% Harm ≥ 3': sum(1 for x in harm_scores if x >= 3) / len(harm_scores) * 100 if len(harm_scores) > 0 else 0,
+            '% Harm ≥ 4': sum(1 for x in harm_scores if x >= 4) / len(harm_scores) * 100 if len(harm_scores) > 0 else 0
+        }
+        
+        # Calculate prompt score statistics
+        prompt_stats = {
+            'Count': len(prompt_scores),
+            'Mean': np.mean(prompt_scores),
+            'Median': np.median(prompt_scores),
+            'Std Dev': np.std(prompt_scores),
+            'Min': np.min(prompt_scores),
+            'Max': np.max(prompt_scores),
+            '25th Percentile': np.percentile(prompt_scores, 25),
+            '75th Percentile': np.percentile(prompt_scores, 75),
+            'Mode': float(stats.mode(prompt_scores, keepdims=True)[0][0]) if len(prompt_scores) > 0 else np.nan,
+            'Variance': np.var(prompt_scores),
+            'Prompt Scores ≥ 3': sum(1 for x in prompt_scores if x >= 3),
+            'Prompt Scores ≥ 4': sum(1 for x in prompt_scores if x >= 4),
+            '% Prompt ≥ 3': sum(1 for x in prompt_scores if x >= 3) / len(prompt_scores) * 100 if len(prompt_scores) > 0 else 0,
+            '% Prompt ≥ 4': sum(1 for x in prompt_scores if x >= 4) / len(prompt_scores) * 100 if len(prompt_scores) > 0 else 0
+        }
+        
+        # Print statistics in two columns for comparison
+        print(f"{'Statistic':<20} {'Harm Scores':<15} {'Prompt Scores':<15}")
+        print(f"{'-'*20} {'-'*15} {'-'*15}")
+        
+        for stat in ['Count', 'Mean', 'Median', 'Std Dev', 'Min', 'Max', 
+                    '25th Percentile', '75th Percentile', 'Mode', 'Variance',
+                    'Harm Scores ≥ 3', 'Prompt Scores ≥ 3', '% Harm ≥ 3', '% Prompt ≥ 3',
+                    'Harm Scores ≥ 4', 'Prompt Scores ≥ 4', '% Harm ≥ 4', '% Prompt ≥ 4']:
+            if stat in harm_stats and stat in prompt_stats:
+                h_value = harm_stats[stat]
+                p_value = prompt_stats[stat]
+                
+                # Format the values for display
+                if isinstance(h_value, (int, np.integer)):
+                    h_display = f"{h_value}"
+                elif isinstance(h_value, (float, np.floating)):
+                    h_display = f"{h_value:.2f}"
+                else:
+                    h_display = str(h_value)
+                    
+                if isinstance(p_value, (int, np.integer)):
+                    p_display = f"{p_value}"
+                elif isinstance(p_value, (float, np.floating)):
+                    p_display = f"{p_value:.2f}"
+                else:
+                    p_display = str(p_value)
+                
+                if stat.startswith('Harm'):
+                    print(f"{stat:<20} {h_display:<15}")
+                elif stat.startswith('Prompt'):
+                    print(f"{stat:<20} {'':<15} {p_display:<15}")
+                elif stat.startswith('% Harm'):
+                    print(f"{stat:<20} {h_display+'%':<15}")
+                elif stat.startswith('% Prompt'):
+                    print(f"{stat:<20} {'':<15} {p_display+'%':<15}")
+                else:
+                    print(f"{stat:<20} {h_display:<15} {p_display:<15}")
+    
+    # Print overall statistics if we have data from multiple categories
+    if len(all_harm_scores) > 0 and len(all_prompt_scores) > 0:
+        print(f"\n{'-'*40}")
+        print(f"OVERALL STATISTICS (ALL CATEGORIES COMBINED)")
+        print(f"{'-'*40}")
+        
+        # Calculate overall harm score statistics
+        overall_harm_stats = {
+            'Count': len(all_harm_scores),
+            'Mean': np.mean(all_harm_scores),
+            'Median': np.median(all_harm_scores),
+            'Std Dev': np.std(all_harm_scores),
+            'Min': np.min(all_harm_scores),
+            'Max': np.max(all_harm_scores),
+            '25th Percentile': np.percentile(all_harm_scores, 25),
+            '75th Percentile': np.percentile(all_harm_scores, 75),
+            'Mode': float(stats.mode(all_harm_scores, keepdims=True)[0][0]) if len(all_harm_scores) > 0 else np.nan,
+            'Variance': np.var(all_harm_scores),
+            'Harm Scores ≥ 3': sum(1 for x in all_harm_scores if x >= 3),
+            'Harm Scores ≥ 4': sum(1 for x in all_harm_scores if x >= 4),
+            '% Harm ≥ 3': sum(1 for x in all_harm_scores if x >= 3) / len(all_harm_scores) * 100 if len(all_harm_scores) > 0 else 0,
+            '% Harm ≥ 4': sum(1 for x in all_harm_scores if x >= 4) / len(all_harm_scores) * 100 if len(all_harm_scores) > 0 else 0
+        }
+        
+        # Calculate overall prompt score statistics
+        overall_prompt_stats = {
+            'Count': len(all_prompt_scores),
+            'Mean': np.mean(all_prompt_scores),
+            'Median': np.median(all_prompt_scores),
+            'Std Dev': np.std(all_prompt_scores),
+            'Min': np.min(all_prompt_scores),
+            'Max': np.max(all_prompt_scores),
+            '25th Percentile': np.percentile(all_prompt_scores, 25),
+            '75th Percentile': np.percentile(all_prompt_scores, 75),
+            'Mode': float(stats.mode(all_prompt_scores, keepdims=True)[0][0]) if len(all_prompt_scores) > 0 else np.nan,
+            'Variance': np.var(all_prompt_scores),
+            'Prompt Scores ≥ 3': sum(1 for x in all_prompt_scores if x >= 3),
+            'Prompt Scores ≥ 4': sum(1 for x in all_prompt_scores if x >= 4),
+            '% Prompt ≥ 3': sum(1 for x in all_prompt_scores if x >= 3) / len(all_prompt_scores) * 100 if len(all_prompt_scores) > 0 else 0,
+            '% Prompt ≥ 4': sum(1 for x in all_prompt_scores if x >= 4) / len(all_prompt_scores) * 100 if len(all_prompt_scores) > 0 else 0
+        }
+        
+        # Print statistics in two columns for comparison
+        print(f"{'Statistic':<20} {'Harm Scores':<15} {'Prompt Scores':<15}")
+        print(f"{'-'*20} {'-'*15} {'-'*15}")
+        
+        for stat in ['Count', 'Mean', 'Median', 'Std Dev', 'Min', 'Max', 
+                    '25th Percentile', '75th Percentile', 'Mode', 'Variance',
+                    'Harm Scores ≥ 3', 'Prompt Scores ≥ 3', '% Harm ≥ 3', '% Prompt ≥ 3',
+                    'Harm Scores ≥ 4', 'Prompt Scores ≥ 4', '% Harm ≥ 4', '% Prompt ≥ 4']:
+            if stat in overall_harm_stats and stat in overall_prompt_stats:
+                h_value = overall_harm_stats[stat]
+                p_value = overall_prompt_stats[stat]
+                
+                # Format the values for display
+                if isinstance(h_value, (int, np.integer)):
+                    h_display = f"{h_value}"
+                elif isinstance(h_value, (float, np.floating)):
+                    h_display = f"{h_value:.2f}"
+                else:
+                    h_display = str(h_value)
+                    
+                if isinstance(p_value, (int, np.integer)):
+                    p_display = f"{p_value}"
+                elif isinstance(p_value, (float, np.floating)):
+                    p_display = f"{p_value:.2f}"
+                else:
+                    p_display = str(p_value)
+                
+                if stat.startswith('Harm'):
+                    print(f"{stat:<20} {h_display:<15}")
+                elif stat.startswith('Prompt'):
+                    print(f"{stat:<20} {'':<15} {p_display:<15}")
+                elif stat.startswith('% Harm'):
+                    print(f"{stat:<20} {h_display+'%':<15}")
+                elif stat.startswith('% Prompt'):
+                    print(f"{stat:<20} {'':<15} {p_display+'%':<15}")
+                else:
+                    print(f"{stat:<20} {h_display:<15} {p_display:<15}")
+    
+    # Export summary statistics to CSV file for later analysis
+    try:
+        os.makedirs("graph_2/statistics", exist_ok=True)
+        summary_data = []
+        
+        # Collect per-category statistics
+        for category in sorted(all_data.keys()):
+            harm_scores = all_data[category]["Harm_score"]
+            prompt_scores = all_data[category]["Prompt_score"]
+            
+            if len(harm_scores) == 0 or len(prompt_scores) == 0:
+                continue
+                
+            summary_data.append({
+                'Category': category,
+                'Harm_Count': len(harm_scores),
+                'Harm_Mean': np.mean(harm_scores),
+                'Harm_Median': np.median(harm_scores),
+                'Harm_StdDev': np.std(harm_scores),
+                'Harm_Min': np.min(harm_scores),
+                'Harm_Max': np.max(harm_scores),
+                'Harm_Pct_GE_3': sum(1 for x in harm_scores if x >= 3) / len(harm_scores) * 100,
+                'Harm_Pct_GE_4': sum(1 for x in harm_scores if x >= 4) / len(harm_scores) * 100,
+                'Prompt_Count': len(prompt_scores),
+                'Prompt_Mean': np.mean(prompt_scores),
+                'Prompt_Median': np.median(prompt_scores),
+                'Prompt_StdDev': np.std(prompt_scores),
+                'Prompt_Min': np.min(prompt_scores),
+                'Prompt_Max': np.max(prompt_scores),
+                'Prompt_Pct_GE_3': sum(1 for x in prompt_scores if x >= 3) / len(prompt_scores) * 100,
+                'Prompt_Pct_GE_4': sum(1 for x in prompt_scores if x >= 4) / len(prompt_scores) * 100,
+            })
+            
+        # Add overall statistics as the last row
+        if len(all_harm_scores) > 0 and len(all_prompt_scores) > 0:
+            summary_data.append({
+                'Category': 'OVERALL',
+                'Harm_Count': len(all_harm_scores),
+                'Harm_Mean': np.mean(all_harm_scores),
+                'Harm_Median': np.median(all_harm_scores),
+                'Harm_StdDev': np.std(all_harm_scores),
+                'Harm_Min': np.min(all_harm_scores),
+                'Harm_Max': np.max(all_harm_scores),
+                'Harm_Pct_GE_3': sum(1 for x in all_harm_scores if x >= 3) / len(all_harm_scores) * 100,
+                'Harm_Pct_GE_4': sum(1 for x in all_harm_scores if x >= 4) / len(all_harm_scores) * 100,
+                'Prompt_Count': len(all_prompt_scores),
+                'Prompt_Mean': np.mean(all_prompt_scores),
+                'Prompt_Median': np.median(all_prompt_scores),
+                'Prompt_StdDev': np.std(all_prompt_scores),
+                'Prompt_Min': np.min(all_prompt_scores),
+                'Prompt_Max': np.max(all_prompt_scores),
+                'Prompt_Pct_GE_3': sum(1 for x in all_prompt_scores if x >= 3) / len(all_prompt_scores) * 100,
+                'Prompt_Pct_GE_4': sum(1 for x in all_prompt_scores if x >= 4) / len(all_prompt_scores) * 100,
+            })
+            
+        # Create DataFrame and save to CSV
+        summary_df = pd.DataFrame(summary_data)
+        csv_path = "graph_2/statistics/score_statistics_summary.csv"
+        summary_df.to_csv(csv_path, index=False)
+        print(f"\nStatistics summary exported to {csv_path}")
+    except Exception as e:
+        print(f"\nError exporting statistics to CSV: {e}")
+    
+    print("\n" + "="*80)
+
 # Process each category
 for category in categories:
     json_path = os.path.join(base_dir, category, "results.json")
@@ -510,6 +765,10 @@ for category in categories:
     except Exception as e:
         print(f"Error examining reasoning file for {category}: {e}")
 
+# After we've processed all categories, and gathered all data, now print the statistical summary
+# Add this call after the debugging section for reasoning file structure but before the combined visualizations
+print_statistical_data(all_data)
+
 # Generate combined visualizations across all categories
 valid_data = {cat: data for cat, data in all_data.items() 
              if len(data["Harm_score"]) > 0 and len(data["Prompt_score"]) > 0}
@@ -533,6 +792,9 @@ if valid_data:
         'Harm_Score': harm_scores_all,
         'Prompt_Score': prompt_scores_all
     })
+    
+    # NEW: Add index for scatter plots
+    combined_df['Index'] = range(len(combined_df))
     
     # 1. Combined box plots for harm scores by category
     plt.figure(figsize=(14, 8))
@@ -558,7 +820,85 @@ if valid_data:
     plt.savefig("graph_2/prompt_scores/combined_boxplot.png", dpi=300)
     plt.close()
     
-    # 3. Heatmap of average scores by category - FIXED
+    # NEW: Scatter plot of prompt scores across all categories
+    plt.figure(figsize=(16, 10))
+    
+    # Use different color for each category
+    categories = combined_df['Category'].unique()
+    category_colors = {cat: COLORS['category_colors'](i % 10) for i, cat in enumerate(categories)}
+    
+    # Plot each category with different color and shape
+    for i, category in enumerate(categories):
+        cat_data = combined_df[combined_df['Category'] == category]
+        marker = ['o', 's', '^', 'D', 'v', '<', '>', 'p', '*', 'h'][i % 10]  # Different marker for each category
+        plt.scatter(cat_data['Index'], cat_data['Prompt_Score'], 
+                   label=category, color=category_colors[category], 
+                   marker=marker, s=80, alpha=0.7, edgecolor='black', linewidth=0.5)
+    
+    # Add horizontal lines for score ranges
+    plt.axhline(y=4, color='gray', linestyle='--', alpha=0.5)
+    plt.axhline(y=3, color='gray', linestyle='--', alpha=0.5)
+    plt.axhline(y=2, color='gray', linestyle='--', alpha=0.5)
+    plt.axhline(y=1, color='gray', linestyle='--', alpha=0.5)
+    
+    plt.title('Prompt Scores Distribution Across All Categories', fontsize=18)
+    plt.ylabel('Prompt Score', fontsize=16)
+    plt.xlabel('Data Point Index', fontsize=16)
+    plt.grid(True, axis='y', linestyle='--', alpha=0.3)
+    plt.legend(title='Category', title_fontsize=14, fontsize=12, loc='upper left', 
+              bbox_to_anchor=(1, 1), frameon=True, facecolor='white', edgecolor='gray')
+    
+    # Annotate with score statistics
+    for i, category in enumerate(categories):
+        cat_data = combined_df[combined_df['Category'] == category]
+        avg_score = cat_data['Prompt_Score'].mean()
+        plt.annotate(f"{category}: avg={avg_score:.2f}", 
+                    xy=(0.02, 0.98 - i*0.03), xycoords='axes fraction',
+                    fontsize=10, color=category_colors[category],
+                    bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.8))
+    
+    plt.tight_layout()
+    plt.savefig("graph_2/prompt_scores/all_categories_scatter.png", dpi=300)
+    plt.close()
+    
+    # NEW: Scatter plot of harm scores across all categories
+    plt.figure(figsize=(16, 10))
+    
+    # Plot each category with different color and shape
+    for i, category in enumerate(categories):
+        cat_data = combined_df[combined_df['Category'] == category]
+        marker = ['o', 's', '^', 'D', 'v', '<', '>', 'p', '*', 'h'][i % 10]  # Different marker for each category
+        plt.scatter(cat_data['Index'], cat_data['Harm_Score'], 
+                   label=category, color=category_colors[category], 
+                   marker=marker, s=80, alpha=0.7, edgecolor='black', linewidth=0.5)
+    
+    # Add horizontal lines for score ranges
+    plt.axhline(y=4, color='gray', linestyle='--', alpha=0.5)
+    plt.axhline(y=3, color='gray', linestyle='--', alpha=0.5)
+    plt.axhline(y=2, color='gray', linestyle='--', alpha=0.5)
+    plt.axhline(y=1, color='gray', linestyle='--', alpha=0.5)
+    
+    plt.title('Harm Scores Distribution Across All Categories', fontsize=18)
+    plt.ylabel('Harm Score', fontsize=16)
+    plt.xlabel('Data Point Index', fontsize=16)
+    plt.grid(True, axis='y', linestyle='--', alpha=0.3)
+    plt.legend(title='Category', title_fontsize=14, fontsize=12, loc='upper left', 
+              bbox_to_anchor=(1, 1), frameon=True, facecolor='white', edgecolor='gray')
+    
+    # Annotate with score statistics
+    for i, category in enumerate(categories):
+        cat_data = combined_df[combined_df['Category'] == category]
+        avg_score = cat_data['Harm_Score'].mean()
+        plt.annotate(f"{category}: avg={avg_score:.2f}", 
+                    xy=(0.02, 0.98 - i*0.03), xycoords='axes fraction',
+                    fontsize=10, color=category_colors[category],
+                    bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.8))
+    
+    plt.tight_layout()
+    plt.savefig("graph_2/harm_scores/all_categories_scatter.png", dpi=300)
+    plt.close()
+    
+    # 3. Heatmap of average scores by category
     # Create a properly structured DataFrame for the heatmap
     avg_harm = {cat: np.mean(valid_data[cat]["Harm_score"]) for cat in valid_data}
     avg_prompt = {cat: np.mean(valid_data[cat]["Prompt_score"]) for cat in valid_data}
@@ -782,5 +1122,5 @@ if valid_data:
             plt.tight_layout()
             plt.savefig("graph_2/reasoning_comparison/radar_comparison.png", dpi=300)
             plt.close()
-
+        
 print("Analysis complete! All visualizations saved to the 'graph_2' folders.")
