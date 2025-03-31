@@ -51,8 +51,7 @@ The repository contains code, datasets, and evaluation results that systematical
 ├── models/                                # Model checkpoints and configs
 │
 ├── scripts/                               # Utility scripts
-│   ├── setup.sh                           # Environment setup script
-│   └── download_data.sh                   # Data download script
+│   └── setup.sh                           # Environment setup script
 │
 ├── legacy/                                # Original project files (for reference)
 ├── requirements.txt                       # Project dependencies
