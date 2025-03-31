@@ -21,41 +21,43 @@ The repository contains code, datasets, and evaluation results that systematical
 ## Repository Structure
 
 ```
-├── data/                                     # All data-related files
-│   ├── raw/                                  # Raw datasets
-│   ├── processed/                            # Processed datasets
-│   └── benchmarks/                           # Benchmark datasets (SAP)
+├── data/                                  # All data-related files
+│   ├── raw/                               # Raw datasets
+│   ├── processed/                         # Processed datasets
+│   └── benchmarks/                        # Benchmark datasets (SAP)
 │
-├── src/                                      # Source code
-│   ├── data/                                 # Data processing utilities
-│   ├── evaluation/                           # Evaluation scripts
-│   │   ├── implicit/                         # Implicit judgment evaluation
-│   │   ├── explicit/                         # Explicit judgment evaluation
-│   │   └── utils/                            # Evaluation utilities
-│   ├── analysis/                             # Analysis scripts
-│   └── finetune/                             # Fine-tuning code
+├── src/                                   # Source code
+│   ├── data/                              # Data processing utilities
+│   ├── evaluation/                        # Evaluation scripts
+│   │   ├── implicit/                      # Implicit judgment evaluation
+│   │   ├── explicit/                      # Explicit judgment evaluation
+│   │   └── utils/                         # Evaluation utilities
+│   ├── analysis/                          # Analysis scripts
+│   └── finetune/                          # Fine-tuning code
 │
-├── notebooks/                                # Jupyter notebooks
-│   ├── data_exploration.ipynb                # Dataset exploration
-│   ├── fine_tuning.ipynb                     # Fine-tuning experiments
-│   └── result_analysis.ipynb                 # Results analysis
+├── notebooks/                             # Jupyter notebooks
+│   ├── data_exploration.ipynb             # Dataset exploration
+│   ├── fine_tuning.ipynb                  # Fine-tuning experiments
+│   ├── model_loading.ipynb                # Loading and using models
+│   └── result_analysis.ipynb              # Results analysis
 │
-├── results/                                  # All results
-│   ├── implicit_judgment/                    # Implicit judgment results
-│   ├── explicit_judgment/                    # Explicit judgment results
-│   ├── finetune/                             # Fine-tuning results
-│   ├── harmbench/                            # HarmBench evaluation results
-│   └── visualizations/                       # Visualization results
+├── results/                               # All results
+│   ├── implicit_judgment/                 # Implicit judgment results
+│   ├── explicit_judgment/                 # Explicit judgment results
+│   ├── finetune/                          # Fine-tuning results
+│   ├── harmbench/                         # HarmBench evaluation results
+│   └── visualizations/                    # Visualization results
 │
-├── models/                                   # Model checkpoints and configs
+├── models/                                # Model checkpoints and configs
 │
-├── scripts/                                  # Utility scripts
-│   ├── setup.sh                              # Environment setup script
-│   └── download_data.sh                      # Data download script
+├── scripts/                               # Utility scripts
+│   ├── setup.sh                           # Environment setup script
+│   └── download_data.sh                   # Data download script
 │
-├── requirements.txt                          # Project dependencies
-├── LICENSE                                   # License file
-└── README.md                                 # Project documentation
+├── legacy/                                # Original project files (for reference)
+├── requirements.txt                       # Project dependencies
+├── LICENSE                                # License file
+└── README.md                              # Project documentation
 ```
 
 ## Quick Start
@@ -185,6 +187,16 @@ The research demonstrates:
 - **CUDA Out of Memory**: Reduce batch size in fine-tuning notebooks
 - **API Rate Limits**: Add delay between API calls in judgment scripts
 - **Missing Dependencies**: Check requirements.txt and install any missing packages
+
+## For Developers
+
+All original project files are preserved in the `legacy/` directory for reference. The new structure follows Python best practices and makes the codebase more maintainable and easier to navigate.
+
+To contribute:
+1. Create a feature branch from `publish`
+2. Make your changes following the project structure
+3. Add tests if applicable
+4. Submit a pull request
 
 ## Citation
 
