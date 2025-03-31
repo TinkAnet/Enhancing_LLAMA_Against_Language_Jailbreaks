@@ -23,48 +23,17 @@ The repository contains code, datasets, and evaluation results that systematical
 ```
 ├── data/                                     # All data-related files
 │   ├── raw/                                  # Raw datasets
-│   │   ├── adversarial_dataset.jsonl         # Raw adversarial prompts
-│   │   ├── alpaca_raw.json                   # Alpaca dataset for benign examples
-│   │   └── dolly_raw.jsonl                   # Dolly dataset for benign examples
-│   │
 │   ├── processed/                            # Processed datasets
-│   │   ├── adversarial_dataset_cleaned.jsonl # Cleaned adversarial prompts
-│   │   ├── adversarial_dataset_final.jsonl   # Final adversarial dataset
-│   │   ├── adversarial_dataset_invalid.jsonl # Invalid adversarial examples
-│   │   ├── benign_dataset.jsonl              # Benign prompts dataset
-│   │   └── training_dataset.jsonl            # Combined training dataset
-│   │
-│   └── benchmarks/                           # Benchmark datasets
-│       └── SAP/                              # SAP200 benchmark dataset
+│   └── benchmarks/                           # Benchmark datasets (SAP)
 │
 ├── src/                                      # Source code
 │   ├── data/                                 # Data processing utilities
-│   │   └── dataset_gen.py                    # Dataset generation utilities
-│   │
 │   ├── evaluation/                           # Evaluation scripts
 │   │   ├── implicit/                         # Implicit judgment evaluation
-│   │   │   ├── implicit_judgment_llama.py    # LLAMA evaluation
-│   │   │   ├── implicit_judgment_llama_all.py # Comprehensive LLAMA evaluation
-│   │   │   ├── implicit_judgment_claude.py   # Claude evaluation
-│   │   │   ├── implicit_judgment_gemini.py   # Gemini evaluation
-│   │   │   └── implicit_judgment_ollama.py   # Ollama evaluation
-│   │   │
 │   │   ├── explicit/                         # Explicit judgment evaluation
-│   │   │   ├── explicit_judgment_llama.py    # LLAMA explicit judgment
-│   │   │   ├── reasoning_auto_llama.py       # Automated reasoning with LLAMA
-│   │   │   └── reasoning_llama.py            # Reasoning pipeline for LLAMA
-│   │   │
 │   │   └── utils/                            # Evaluation utilities
-│   │       ├── reject_detect.py              # Rejection detection utilities
-│   │       └── harmbench.py                  # HarmBench evaluation utilities
-│   │
 │   ├── analysis/                             # Analysis scripts
-│   │   ├── statistic.py                      # Statistical analysis utilities
-│   │   └── statistic_explicit.py             # Statistics for explicit judgment
-│   │
 │   └── finetune/                             # Fine-tuning code
-│       └── lora/                             # LoRA fine-tuning
-│           └── fine_tune.py                  # LoRA fine-tuning script
 │
 ├── notebooks/                                # Jupyter notebooks
 │   ├── data_exploration.ipynb                # Dataset exploration
@@ -73,32 +42,12 @@ The repository contains code, datasets, and evaluation results that systematical
 │
 ├── results/                                  # All results
 │   ├── implicit_judgment/                    # Implicit judgment results
-│   │   └── implicit_contrast/                # Contrastive analysis results
-│   │
 │   ├── explicit_judgment/                    # Explicit judgment results
-│   │   ├── reasoning/                        # Reasoning-based results
-│   │   └── llm_based/                        # LLM-based results
-│   │
 │   ├── finetune/                             # Fine-tuning results
-│   │   ├── fraud_results_final.json          # Results for fraud domain
-│   │   ├── politics_results_final.json       # Results for politics domain
-│   │   ├── pornography_sexual_minors_results_final.json
-│   │   ├── race_results_final.json           # Results for race domain
-│   │   ├── religion_results_final.json       # Results for religion domain
-│   │   ├── suicide_results_final.json        # Results for suicide domain
-│   │   ├── terrorism_results_final.json      # Results for terrorism domain
-│   │   └── violence_results_final.json       # Results for violence domain
-│   │
 │   ├── harmbench/                            # HarmBench evaluation results
-│   │   ├── before_finetune.json              # Results before fine-tuning
-│   │   └── finetuned_harmbench.json          # Results after fine-tuning
-│   │
 │   └── visualizations/                       # Visualization results
-│       ├── graphs/                           # Main graphs
-│       └── additional_graphs/                # Additional visualizations
 │
 ├── models/                                   # Model checkpoints and configs
-│   └── lora_adapter/                         # LoRA adapter files
 │
 ├── scripts/                                  # Utility scripts
 │   ├── setup.sh                              # Environment setup script
@@ -109,15 +58,109 @@ The repository contains code, datasets, and evaluation results that systematical
 └── README.md                                 # Project documentation
 ```
 
+## Quick Start
+
+### Prerequisites
+
+- Python 3.9 or higher
+- Git
+- CUDA-compatible GPU (recommended for fine-tuning)
+
+### Installation
+
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/TinkAnet/Enhancing_LLAMA-Against_Language_Jailbreaks.git
+   cd Enhancing_LLAMA-Against_Language_Jailbreaks
+   ```
+
+2. Set up the environment using our setup script:
+   ```bash
+   chmod +x scripts/setup.sh
+   ./scripts/setup.sh
+   ```
+
+3. Download the datasets:
+   ```bash
+   chmod +x scripts/download_data.sh
+   ./scripts/download_data.sh
+   ```
+
 ## Datasets and Models
 
 ### Adversarial Dataset
 An extensive collection of 8.87k jailbreak prompts covering various harmful content categories:
 - [HuggingFace Dataset: bebop404/adversarial](https://huggingface.co/datasets/bebop404/adversarial)
 
+```python
+from datasets import load_dataset
+dataset = load_dataset("bebop404/adversarial")
+```
+
 ### Fine-tuned Model
 A LoRA adapter for LLAMA-3.3-70B that enhances safety while preserving capabilities:
 - [HuggingFace Model: bebop404/my-lora-adapter](https://huggingface.co/bebop404/my-lora-adapter)
+
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import PeftModel
+
+# Load the base model
+model_name = "meta-llama/Llama-3.3-70B-Instruct"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
+
+# Load the LoRA adapter
+adapter_name = "bebop404/my-lora-adapter"
+model = PeftModel.from_pretrained(model, adapter_name)
+```
+
+## Usage Guide
+
+### Evaluation
+
+#### Implicit Judgment
+
+Evaluate LLAMA's unassisted handling of harmful prompts:
+
+```bash
+# Set API key as environment variable
+export LLAMA_API_KEY="your_api_key_here"
+
+# Run evaluation
+python -m src.evaluation.implicit.implicit_judgment_llama
+```
+
+#### Explicit Judgment
+
+Apply structured reasoning to analyze model outputs:
+
+```bash
+python -m src.evaluation.explicit.explicit_judgment_llama
+```
+
+### Running Fine-tuning
+
+Fine-tune LLAMA with LoRA adaptation:
+
+```bash
+python -m src.finetune.lora.fine_tune
+```
+
+Alternatively, explore the Jupyter notebook:
+
+```bash
+jupyter notebook notebooks/fine_tuning.ipynb
+```
+
+### Analysis and Visualization
+
+Generate statistical analysis of results:
+
+```bash
+python -m src.analysis.statistic         # For implicit judgment
+python -m src.analysis.statistic_explicit # For explicit judgment
+```
 
 ## Methodology
 
@@ -137,119 +180,7 @@ The research demonstrates:
 - Significant improvement in refusal rates across all categories after fine-tuning (from 61.25% to 91.69% overall)
 - Enhanced robustness against novel jailbreak attempts without sacrificing performance on benign queries
 
-## Tutorial
-
-### Prerequisites
-
-Before starting, ensure you have the following:
-- Python 3.9 or higher
-- Git
-- CUDA-compatible GPU (recommended for fine-tuning)
-
-### Setting Up the Environment
-
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/TinkAnet/Enhancing_LLAMA-Against_Language_Jailbreaks.git
-   cd Enhancing_LLAMA-Against_Language_Jailbreaks
-   ```
-
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv .venv
-   # On Windows
-   .venv\Scripts\activate
-   # On macOS/Linux
-   source .venv/bin/activate
-   ```
-
-3. Install the required dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-### Running Evaluations
-
-#### Implicit Judgment Evaluation
-
-This evaluates how LLAMA responds to harmful prompts without any assistance:
-
-1. Add your API key to the script (or set it as an environment variable):
-   ```bash
-   # Set environment variable
-   export LLAMA_API_KEY="your_api_key_here"
-   ```
-
-2. Run the implicit judgment script:
-   ```bash
-   python Implicit_judgment_llama.py
-   ```
-
-#### Explicit Judgment Evaluation
-
-This adds structured reasoning to analyze model outputs:
-
-```bash
-python explicit_judgment_llama.py
-```
-
-#### Analyzing Results
-
-The project includes statistical analysis tools:
-
-```bash
-python Statistic.py  # For implicit judgment analysis
-python Statistic_explicit.py  # For explicit judgment analysis
-```
-
-### Fine-tuning with LoRA
-
-To fine-tune the model with Low-Rank Adaptation:
-
-1. Navigate to the fine-tuning directory:
-   ```bash
-   cd finetune/LoRa
-   ```
-
-2. Start a Jupyter server and run the fine-tuning notebook:
-   ```bash
-   jupyter notebook
-   # Open and run fine-tune.ipynb
-   ```
-
-### Using the Fine-tuned Model
-
-Load the LoRA adapter from HuggingFace:
-```python
-from transformers import AutoModelForCausalLM, AutoTokenizer
-from peft import PeftModel, PeftConfig
-
-# Load the base model
-model_name = "meta-llama/Llama-3.3-70B-Instruct"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name)
-
-# Load the LoRA adapter
-adapter_name = "bebop404/my-lora-adapter"
-model = PeftModel.from_pretrained(model, adapter_name)
-```
-
-### Evaluating the Fine-tuned Model
-
-Test the model against the HarmBench dataset:
-```bash
-python finetune/implicit_harmbench.py
-```
-
-### Using the Adversarial Dataset
-
-Access the dataset from HuggingFace:
-```python
-from datasets import load_dataset
-dataset = load_dataset("bebop404/adversarial")
-```
-
-### Troubleshooting
+## Troubleshooting
 
 - **CUDA Out of Memory**: Reduce batch size in fine-tuning notebooks
 - **API Rate Limits**: Add delay between API calls in judgment scripts
