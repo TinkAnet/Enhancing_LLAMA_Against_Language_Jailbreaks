@@ -191,17 +191,8 @@ cython_debug/
 api_keys.json
 credentials.json
 
-# Ignoring old files now moved to the new structure
-/Data_gen/
-/graph/
-/graph_2/
-/Implicit_judgment_result/
-/explicit_judgment_result_2/
-/explicit_judgment_result_LLM_based/
-/Explicit_judgment_result_reasoning/
-/implicit_contrast/
-/SAP/
-/finetune/
+# Legacy code and files (moved to new structure)
+/legacy/
 
 # Ignoring old Python files now moved to src
 *.py
