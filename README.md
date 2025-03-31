@@ -81,11 +81,6 @@ The repository contains code, datasets, and evaluation results that systematical
    ./scripts/setup.sh
    ```
 
-3. Download the datasets:
-   ```bash
-   chmod +x scripts/download_data.sh
-   ./scripts/download_data.sh
-   ```
 
 ## Datasets and Models
 
