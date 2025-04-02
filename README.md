@@ -7,17 +7,32 @@
 ## Project Overview
 
 This research project evaluates and enhances LLAMA's safety mechanisms against language jailbreaks using a novel three-stage framework:
-1. **Implicit Judgment**: Evaluating LLAMA's unassisted responses to harmful prompts
-2. **Explicit Judgment**: Structured reasoning and severity scoring of model responses
-3. **Fine-tuning via LoRA**: Targeted adaptation to strengthen safety without compromising general capabilities
+1. **Implicit Judgment**:  
+   Evaluate LLAMA’s unassisted responses to a diverse set of harmful prompts (using benchmarks like SAP200) to establish a baseline safety performance.
+
+2. **Explicit Judgment**:  
+   Incorporate structured, two-step reasoning where the model first assigns a severity score (on a 0–5 scale) to the harmful prompt and then evaluates its own response using a position-based weighting mechanism. This process pinpoints nuanced vulnerabilities that simple pass/fail tests can miss.
+
+3. **Fine-Tuning via LoRA**:  
+   Apply a parameter-efficient Low-Rank Adaptation (LoRA) approach to specifically enhance LLAMA’s ability to safely refuse or address dangerous prompts—improving overall refusal rates without sacrificing general capabilities.
+
 
 The repository contains code, datasets, and evaluation results that systematically identify and address safety gaps in LLAMA's handling of harmful content.
 
 ## Key Contributions
 
-- **Comprehensive Safety Evaluation Framework**: A multi-phase approach combining implicit and explicit judgment to identify failures that simple pass/fail tests would miss
-- **Empirical Analysis of LLAMA's Vulnerabilities**: Detailed assessment across eight sensitive domains using the SAP200 benchmark
-- **Structured Reasoning and LoRA Fine-Tuning**: Pinpointing model missteps and implementing targeted interventions to address them
+- **Advanced Safety Evaluation Framework**:  
+  A two-phase (implicit and explicit) approach that offers granular insight into the model’s safety behavior.
+  
+- **Position-Based Severity Scoring**:  
+  A novel method that quantifies harmful content by considering not just its presence but also its position within the response.
+
+- **LoRA-Based Fine-Tuning**:  
+  An efficient adaptation strategy that significantly improves LLAMA’s refusal behavior against both overt and subtle harmful prompts without degrading performance on benign queries.
+
+- **Empirical Insights and Benchmarking**:  
+  Comprehensive evaluations on SAP200 and HarmBench benchmarks demonstrate dramatic improvements, underscoring the effectiveness of our approach.
+
 
 ## Repository Structure
 
@@ -162,20 +177,23 @@ python -m src.analysis.statistic_explicit # For explicit judgment
 ## Methodology
 
 ### Implicit Judgment
-Measures LLAMA's default capability to handle both overtly harmful questions and more subtly phrased ones without assistance.
+Capturing LLAMA’s baseline response behavior by measuring its refusal rates on harmful prompts.
 
 ### Explicit Judgment
-Applies structured reasoning to model outputs, identifies key statements, and assigns severity scores indicating harmfulness levels.
+Employing a two-step evaluation:
+- Prompt Severity Scoring: The model rates each harmful prompt on a 0–5 scale.
+- Response Harm Scoring: Using a position-based weighting system, the model evaluates its own responses to quantify harmful content.
 
 ### Fine-tuning with LoRA
-Uses parameter-efficient Low-Rank Adaptation to directly address weaknesses identified in LLAMA's safety behavior.
+Training on a merged dataset of adversarial (3 parts) and benign (7 parts) examples, this phase significantly improves refusal rates—from 61.25% to 91.69%—while preserving the model’s performance on safe inputs.
 
 ## Results
 
 The research demonstrates:
-- Stark disparity in LLAMA's baseline safety performance (e.g., ~93% refusal for explicit self-harm vs. only 20-24% for nuanced harmful content)
-- Significant improvement in refusal rates across all categories after fine-tuning (from 61.25% to 91.69% overall)
-- Enhanced robustness against novel jailbreak attempts without sacrificing performance on benign queries
+- Baseline Performance: LLAMA 3.3–70B shows high refusal rates for overtly harmful prompts (e.g., ~93% for explicit self-harm) but is vulnerable to subtle, nuanced queries (refusal rates as low as ~20–24% in certain categories).
+- Post Fine-Tuning Enhancements: After LoRA-based fine-tuning, overall refusal rates on the SAP200 benchmark increased dramatically (from 61.25% to 91.69%). Similar improvements were observed on the HarmBench benchmark, reflecting enhanced zero-shot defenses against unseen jailbreak attempts.
+
+- Robust Generalization: The fine-tuned model maintains strong performance on benign queries, ensuring that safety is improved without degrading general usefulness.
 
 ## Troubleshooting
 
@@ -188,8 +206,8 @@ The research demonstrates:
 All original project files are preserved in the `legacy/` directory for reference. The new structure follows Python best practices and makes the codebase more maintainable and easier to navigate.
 
 To contribute:
-1. Create a feature branch from `publish`
-2. Make your changes following the project structure
+1. Create a feature branch from `main`
+2. Implement your changes following the project structure.
 3. Add tests if applicable
 4. Submit a pull request
 
