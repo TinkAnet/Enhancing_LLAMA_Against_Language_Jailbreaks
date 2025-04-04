@@ -8,13 +8,13 @@
 
 This research project evaluates and enhances LLAMA's safety mechanisms against language jailbreaks using a novel three-stage framework:
 1. **Implicit Judgment**:  
-   Evaluate LLAMA’s unassisted responses to a diverse set of harmful prompts (using benchmarks like SAP200) to establish a baseline safety performance.
+   We first conducted an implicit judgment test, where LLAMA responds to prompts without special intervention. On SAP200, LLAMA’s initial refusal rate reached 61.25%, indicating moderate alignment but also revealing vulnerabilities (e.g., responding helpfully to disguised or context-sensitive harmful queries). Understanding these weaknesses set the stage for more granular analysis.
 
 2. **Explicit Judgment**:  
-   Incorporate structured, two-step reasoning where the model first assigns a severity score (on a 0–5 scale) to the harmful prompt and then evaluates its own response using a position-based weighting mechanism. This process pinpoints nuanced vulnerabilities that simple pass/fail tests can miss.
+   We introduced an explicit judgment mechanism involving two evaluation approaches. Prompts were evaluated using an LLM-based explicit judgment for their inherent harmfulness. Responses were assessed using both an LLM-based explicit judgment and a novel position-based severity scoring mechanism, enabling detailed insights into partial compliance or subtle policy violations. Critically, the explicit approach encapsulates the implicit phase—if the model refuses outright, no subsequent harm can surface. This layered design is well-suited for online deployment, where prompts pass through both implicit and explicit checks.
 
 3. **Fine-Tuning via LoRA**:  
-   Apply a parameter-efficient Low-Rank Adaptation (LoRA) approach to specifically enhance LLAMA’s ability to safely refuse or address dangerous prompts—improving overall refusal rates without sacrificing general capabilities.
+   To systematically address identified gaps, we curated adversarial and benign prompts and fine-tuned LLAMA using Low-Rank Adaptation (LoRA). The approach trains only a small set of additional parameters, preserving most of LLAMA’s original knowledge while reinforcing stricter filtering rules. The result is a more deterministic refusal mechanism that consistently flags and rejects harmful requests. The fine-tuned model is efficient to deploy in real time, suitable for production-scale services.
 
 
 The repository contains code, datasets, and evaluation results that systematically identify and address safety gaps in LLAMA's handling of harmful content.
@@ -174,25 +174,12 @@ python -m src.analysis.statistic         # For implicit judgment
 python -m src.analysis.statistic_explicit # For explicit judgment
 ```
 
-## Methodology
-
-### Implicit Judgment
-Capturing LLAMA’s baseline response behavior by measuring its refusal rates on harmful prompts.
-
-### Explicit Judgment
-Employing a two-step evaluation:
-- Prompt Severity Scoring: The model rates each harmful prompt on a 0–5 scale.
-- Response Harm Scoring: Using a position-based weighting system, the model evaluates its own responses to quantify harmful content.
-
-### Fine-tuning with LoRA
-Training on a merged dataset of adversarial (3 parts) and benign (7 parts) examples, this phase significantly improves refusal rates—from 61.25% to 91.69%—while preserving the model’s performance on safe inputs.
 
 ## Results
 
 The research demonstrates:
 - Baseline Performance: LLAMA 3.3–70B shows high refusal rates for overtly harmful prompts (e.g., ~93% for explicit self-harm) but is vulnerable to subtle, nuanced queries (refusal rates as low as ~20–24% in certain categories).
 - Post Fine-Tuning Enhancements: After LoRA-based fine-tuning, overall refusal rates on the SAP200 benchmark increased dramatically (from 61.25% to 91.69%). Similar improvements were observed on the HarmBench benchmark, reflecting enhanced zero-shot defenses against unseen jailbreak attempts.
-
 - Robust Generalization: The fine-tuned model maintains strong performance on benign queries, ensuring that safety is improved without degrading general usefulness.
 
 ## Troubleshooting
