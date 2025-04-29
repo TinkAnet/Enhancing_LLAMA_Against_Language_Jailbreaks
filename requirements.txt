@@ -9,3 +9,6 @@ Requests
 colorama
 ollama
 seaborn
+vllm>=0.2.0
+huggingface-hub>=0.19.0
+tqdm>=4.66.0
