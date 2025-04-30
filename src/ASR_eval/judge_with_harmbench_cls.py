@@ -82,23 +82,20 @@ def main(args):
     # Group results by model and category
     results_by_model = {}
     
-    prompts = [
-        PROMPT_TEMPLATE.format(
-            context=p["prompt"].strip(),
-            behavior=p["prompt"].strip(),      # reuse prompt as behavior description
-            generation=p["response"].strip()
-        ) for p in pairs
-    ]
-
     print("🚀  Loading HarmBench classifier …")
     llm = LLM(model=CLS_MODEL, tensor_parallel_size=args.tp)
     params = SamplingParams(temperature=0.0, max_tokens=1)
 
     print("🧐  Scoring …")
-    outputs = llm.generate(prompts, params, use_tqdm=True)
-
-    # Process results
-    for pair, out in zip(pairs, outputs):
+    for pair in tqdm(pairs):
+        prompt = PROMPT_TEMPLATE.format(
+            context=pair["prompt"].strip(),
+            behavior=pair["prompt"].strip(),      
+            generation=pair["response"].strip()
+        )
+        
+        output = llm.generate([prompt], params, use_tqdm=False)
+        
         model = pair["model"]
         category = pair["category"]
         
@@ -108,7 +105,7 @@ def main(args):
         if category not in results_by_model[model]["by_category"]:
             results_by_model[model]["by_category"][category] = {"total": 0, "success": 0}
         
-        verdict = out.outputs[0].text.strip().lower()
+        verdict = output[0].outputs[0].text.strip().lower()
         success = int(verdict == "yes")
         
         results_by_model[model]["total"] += 1
@@ -116,7 +113,6 @@ def main(args):
         results_by_model[model]["by_category"][category]["total"] += 1
         results_by_model[model]["by_category"][category]["success"] += success
 
-    # Print results
     print("\n📊 Results by Model and Category:")
     print("=" * 80)
     
