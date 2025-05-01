@@ -4,12 +4,15 @@ import json
 from filter import *
 
 def generate(text):
-    response = ollama.generate(
-        model = "LLAMA3.3-70b",
-        prompt=text,
-        options={'system':""}
-    )
-    content = response['response']
+    try:
+        response = ollama.generate(
+            model = "LLAMA3.3-70b",
+            prompt=text,
+            options={'system':""}
+        )
+        content = response['response']
+    except:
+        return "Error"
     return content
 
 def main(root):
