@@ -2,6 +2,7 @@ import ollama
 import os
 import json
 from filter import *
+from tqdm import tqdm
 
 def generate(text):
     try:
@@ -21,7 +22,7 @@ def main(root):
         index = 0
         data = []
         print("Generating refusal dataset......")
-        for text in sentences:
+        for text in tqdm(sentences,desc = "Processing"):
             index += 1
             result = generate(text)
             item = {
