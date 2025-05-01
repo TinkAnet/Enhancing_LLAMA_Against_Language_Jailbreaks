@@ -93,7 +93,6 @@ def main(args):
             behavior=pair["prompt"].strip(),      
             generation=pair["response"].strip()
         )
-        
         output = llm.generate([prompt], params, use_tqdm=False)
         
         model = pair["model"]
