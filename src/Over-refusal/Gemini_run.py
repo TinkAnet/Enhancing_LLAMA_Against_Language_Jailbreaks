@@ -4,24 +4,13 @@ import os
 import time
 import re
 from dotenv import load_dotenv
-import logging
+#import logging
 import traceback
-
-logging.basicConfig(
-    level=logging.DEBUG,  # 设置记录级别
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    filename='app.log',  # 日志文件
-    filemode='a'  # 追加模式
-)
-def log_error_to_file(error_msg):
-    with open('errors.log', 'a') as f:
-        f.write(f"\nError:\n{error_msg}\n")
-        f.write("-" * 50 + "\n")
 
 # Load environment variables
 load_dotenv() 
 API_KEY = os.getenv("api_key")  
-print(API_KEY)
+#print(API_KEY)
 URL = "https://api.ohmygpt.com/v1/chat/completions"
 
 # Function to process a single sentence
@@ -29,35 +18,17 @@ def evaluate_sentence(sentence):
     payload = {
         "model": "gemini-2.0-flash",
         "messages": [
-            {"role": "system", "content": ""},
+            #{"role": "system", "content": ""},
             {"role": "user", "content": sentence}
         ],
         "stream": False
     }
     
     headers = {"Authorization": f"Bearer {API_KEY}"}
-    try:
-        resp = requests.post(URL, headers=headers, json=payload, timeout=60)
-        print(resp.json())
-        response_content = resp.json()["choices"][0]["message"]["content"]
-        return response_content
-    except Exception as e:
-        print(f"Error processing sentence: {e}")
-        error_info = {
-        'type': type(e).__name__,
-        'message': str(e),
-        'traceback': traceback.format_exc()
-        }
-        error_msg = f"""\
-        Error Type: {error_info['type']}
-        Error Message: {error_info['message']}
-        TraceTrack:
-        {error_info['traceback']}
-        """
-    
-        # 写入文件
-        log_error_to_file(error_msg)
-        return "Error"
+    resp = requests.post(URL, headers=headers, json=payload, timeout=60)
+    print(resp.json())
+    response_content = resp.json()["choices"][0]["message"]["content"]
+    return response_content
 
 # Function to check if the result contains a number between 0-5
 def check_over_refusal(result):
