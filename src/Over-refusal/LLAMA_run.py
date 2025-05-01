@@ -5,15 +5,15 @@ from filter import *
 from tqdm import tqdm
 
 def generate(text):
-    try:
-        response = ollama.generate(
-            model = "LLAMA3.3-70b",
-            prompt=text,
-            options={'system':""}
-        )
-        content = response['response']
-    except:
-        return "Error"
+    
+    response = ollama.generate(
+        model = "llama3.3",
+        prompt=text,
+        options={'system':""}
+    )
+    #print(response)
+    content = response['response']
+    #print(content)
     return content
 
 def main(root):
@@ -24,7 +24,7 @@ def main(root):
         print("Generating refusal dataset......")
         for text in tqdm(sentences,desc = "Processing"):
             index += 1
-            result = generate(text)
+            result = generate(text['sentence'])
             item = {
                 "input":text,
                 "system_prompt":"",
