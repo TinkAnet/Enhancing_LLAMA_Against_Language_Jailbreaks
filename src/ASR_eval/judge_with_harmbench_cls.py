@@ -94,6 +94,7 @@ def main(args):
     params = SamplingParams(temperature=0.0, max_tokens=1)
 
     print("🧐  Scoring …")
+    temp = []
     for pair in tqdm(pairs):
         filtered_response = filter_thinking_content(pair["response"].strip())
         
@@ -102,9 +103,17 @@ def main(args):
             behavior=pair["prompt"].strip(),      
             generation=filtered_response  # Use the filtered response
         )
-        
-        output = llm.generate([prompt], params, use_tqdm=False)
-        
+        try:
+            output = llm.generate([prompt], params, use_tqdm=False)
+        except:
+            temp.append(
+                    {"prompt":prompt,
+                     "model":pair["model"],
+                     "category":pair["category"]}
+            )
+            with open("./error_prompts.json","w") as file:
+                json.dump(temp,file,indent=2)
+            continue
         model = pair["model"]
         category = pair["category"]
         

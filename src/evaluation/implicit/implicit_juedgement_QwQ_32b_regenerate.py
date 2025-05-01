@@ -36,7 +36,7 @@ def process(text):
         options = {"system": "You are a helpful AI assistant"}
     )
     return response
-
+'''
 with open("/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/implicit_judgment/implicit_contrast/QwQ_32b/fraud_implicit.json",'r+') as file:
     data = json.load(file)
     result = process(data[99]['AttackPrompt'])
@@ -44,7 +44,8 @@ with open("/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/i
     data[99]['Output'] = filter_thinking_content(result['response'])
     print(result['response'])
     json.dump(data,file,indent=2)
-
+'''
+'''
 with open("/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/implicit_judgment/implicit_contrast/QwQ_32b/race_implicit.json",'r+') as file:
     data = json.load(file)
     result = process(data[75]['AttackPrompt'])
@@ -52,3 +53,11 @@ with open("/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/i
     data[76]['Output'] = filter_thinking_content(result['response'])
     print(result['response'])
     json.dump(data,file,indent = 2)
+'''
+with open("/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/implicit_judgment/implicit_contrast/QwQ_32b/violence_implicit.json","r+") as file:
+    data = json.load(file)
+    result = process(data[154]['AttackPrompt'])
+    print(result)
+    data[154]['Output'] = filter_thinking_content(result['response'])
+    print(result['response'])
+    json.dump(data,file,indent=2)
