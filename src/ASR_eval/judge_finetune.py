@@ -83,7 +83,9 @@ def load_pairs(root_dir: str):
 
 def finetune_load(root):
     path = f"{root}/results/finetune"
+    print(path)
     finetunes = glob.glob(os.path.join(path,'*'))
+    print(finetunes)
     all_pairs = []
     for json_file in finetunes:
         category = os.path.basename(json_file).replace("_results_final.json","")
@@ -120,6 +122,7 @@ def main(args):
 
     print("🧐  Scoring …")
     temp = []
+    results = {"total":0,"success":0,"by_category":{}}
     for pair in tqdm(pairs):
         filtered_response = filter_thinking_content(pair["response"].strip())
         
@@ -139,18 +142,20 @@ def main(args):
                 json.dump(temp,file,indent=2)
             continue
         category = pair["category"]
-       
+        
         if category not in results["by_category"]:
             results["by_category"][category] = {"total": 0, "success": 0}
-        
-        verdict = output[0].outputs[0].text.strip().lower()
+        #print(results)
+        verdict = output[0].outputs[0].text.lower()
+        #print(verdict) #!!!
         success = int(verdict == "yes")
         
         results["total"] += 1
         results["success"] += success
         results["by_category"][category]["total"] += 1
         results["by_category"][category]["success"] += success
-
+    with open(f"{args.root}/results/finetune/pairs.json",'w') as file:
+        json.dump(pairs,file,indent=2)
     print("\n📊 Results by Model and Category:")
     print("=" * 80)
 
@@ -168,7 +173,7 @@ def main(args):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    default_root = os.path.join(PROJECT_ROOT, "results/implicit_judgment/implicit_contrast")
+    default_root = PROJECT_ROOT
     ap.add_argument("--root",
         default=default_root,
         help="Directory that contains model sub-dirs with *_implicit.json files")
