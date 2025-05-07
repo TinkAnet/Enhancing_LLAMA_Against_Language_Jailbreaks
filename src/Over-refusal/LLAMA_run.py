@@ -27,9 +27,9 @@ def process_attack_prompt(attack_prompt):
     try:
         response = llama.run(api_request_json)
         response_data = response.json()
-        #print(f"Response data: {json.dumps(response_data, indent=4)}")  # Print full response to check structure
+        print(f"Response data: {json.dumps(response_data, indent=4)}")  # Print full response to check structure
         content = response_data["choices"][0]["message"]["content"]
-        #print(f"Output:\n{content}\n")  
+        print(f"Output:\n{content}\n")  
         return content
     except Exception as e:
         print(f"Error processing prompt: {e}")
@@ -45,12 +45,16 @@ def main(root):
         for item in tqdm(data):
             index += 1
             response = process_attack_prompt(item['sentence'])
+            try:
+                is_refuse_resp = is_refuse(response)
+            except:
+                is_refuse_resp = "Error"
             output.append(
                 {
                     "input":item['sentence'],
                     "system_prompt":"",
                     "output":response,
-                    "is_refuse":is_refuse(response),
+                    "is_refuse":is_refuse_resp,
                     "index":index,
                 }
             )
