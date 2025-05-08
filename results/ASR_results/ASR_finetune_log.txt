@@ -1,46 +1,46 @@
-INFO 05-02 10:50:38 [__init__.py:239] Automatically detected platform cuda.
+INFO 05-08 19:05:50 [__init__.py:239] Automatically detected platform cuda.
 🔍  Collecting AttackPrompt / Output pairs …
 /home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune
-['/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/terrorism_results_final.json', '/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/suicide_results_final.json', '/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/violence_results_final.json', '/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/fraud_results_final.json', '/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/religion_results_final.json', '/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/pornography_sexual_minors_results_final.json', '/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/race_results_final.json', '/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/politics_results_final.json']
+['/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/terrorism_results_final.json', '/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/suicide_results_final.json', '/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/pairs.json', '/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/violence_results_final.json', '/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/fraud_results_final.json', '/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/religion_results_final.json', '/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/pornography_sexual_minors_results_final.json', '/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/race_results_final.json', '/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/results/finetune/politics_results_final.json']
    → 1600 total records
 🚀  Loading HarmBench classifier …
-INFO 05-02 10:50:46 [config.py:717] This model supports multiple tasks: {'embed', 'generate', 'score', 'reward', 'classify'}. Defaulting to 'generate'.
-INFO 05-02 10:50:46 [config.py:2003] Chunked prefill is enabled with max_num_batched_tokens=8192.
-INFO 05-02 10:50:49 [core.py:58] Initializing a V1 LLM engine (v0.8.5) with config: model='cais/HarmBench-Llama-2-13b-cls', speculative_config=None, tokenizer='cais/HarmBench-Llama-2-13b-cls', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, override_neuron_config=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=2048, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, kv_cache_dtype=auto,  device_config=cuda, decoding_config=DecodingConfig(guided_decoding_backend='auto', reasoning_backend=None), observability_config=ObservabilityConfig(show_hidden_metrics=False, otlp_traces_endpoint=None, collect_model_forward_time=False, collect_model_execute_time=False), seed=None, served_model_name=cais/HarmBench-Llama-2-13b-cls, num_scheduler_steps=1, multi_step_stream_outputs=True, enable_prefix_caching=True, chunked_prefill_enabled=True, use_async_output_proc=True, disable_mm_preprocessor_cache=False, mm_processor_kwargs=None, pooler_config=None, compilation_config={"level":3,"custom_ops":["none"],"splitting_ops":["vllm.unified_attention","vllm.unified_attention_with_output"],"use_inductor":true,"compile_sizes":[],"use_cudagraph":true,"cudagraph_num_of_warmups":1,"cudagraph_capture_sizes":[512,504,496,488,480,472,464,456,448,440,432,424,416,408,400,392,384,376,368,360,352,344,336,328,320,312,304,296,288,280,272,264,256,248,240,232,224,216,208,200,192,184,176,168,160,152,144,136,128,120,112,104,96,88,80,72,64,56,48,40,32,24,16,8,4,2,1],"max_capture_size":512}
-WARNING 05-02 10:50:49 [utils.py:2522] Methods determine_num_available_blocks,device_config,get_cache_block_size_bytes,initialize_cache not implemented in <vllm.v1.worker.gpu_worker.Worker object at 0x7fa5b891d610>
-INFO 05-02 10:50:49 [parallel_state.py:1004] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, TP rank 0
-INFO 05-02 10:50:49 [cuda.py:221] Using Flash Attention backend on V1 engine.
-WARNING 05-02 10:50:49 [topk_topp_sampler.py:69] FlashInfer is not available. Falling back to the PyTorch-native implementation of top-p & top-k sampling. For the best performance, please install FlashInfer.
-INFO 05-02 10:50:49 [gpu_model_runner.py:1329] Starting to load model cais/HarmBench-Llama-2-13b-cls...
-INFO 05-02 10:50:50 [weight_utils.py:265] Using model weights format ['*.safetensors']
+INFO 05-08 19:05:59 [config.py:717] This model supports multiple tasks: {'classify', 'score', 'reward', 'embed', 'generate'}. Defaulting to 'generate'.
+INFO 05-08 19:05:59 [config.py:2003] Chunked prefill is enabled with max_num_batched_tokens=8192.
+INFO 05-08 19:06:01 [core.py:58] Initializing a V1 LLM engine (v0.8.5) with config: model='cais/HarmBench-Llama-2-13b-cls', speculative_config=None, tokenizer='cais/HarmBench-Llama-2-13b-cls', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, override_neuron_config=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=2048, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, kv_cache_dtype=auto,  device_config=cuda, decoding_config=DecodingConfig(guided_decoding_backend='auto', reasoning_backend=None), observability_config=ObservabilityConfig(show_hidden_metrics=False, otlp_traces_endpoint=None, collect_model_forward_time=False, collect_model_execute_time=False), seed=None, served_model_name=cais/HarmBench-Llama-2-13b-cls, num_scheduler_steps=1, multi_step_stream_outputs=True, enable_prefix_caching=True, chunked_prefill_enabled=True, use_async_output_proc=True, disable_mm_preprocessor_cache=False, mm_processor_kwargs=None, pooler_config=None, compilation_config={"level":3,"custom_ops":["none"],"splitting_ops":["vllm.unified_attention","vllm.unified_attention_with_output"],"use_inductor":true,"compile_sizes":[],"use_cudagraph":true,"cudagraph_num_of_warmups":1,"cudagraph_capture_sizes":[512,504,496,488,480,472,464,456,448,440,432,424,416,408,400,392,384,376,368,360,352,344,336,328,320,312,304,296,288,280,272,264,256,248,240,232,224,216,208,200,192,184,176,168,160,152,144,136,128,120,112,104,96,88,80,72,64,56,48,40,32,24,16,8,4,2,1],"max_capture_size":512}
+WARNING 05-08 19:06:01 [utils.py:2522] Methods determine_num_available_blocks,device_config,get_cache_block_size_bytes,initialize_cache not implemented in <vllm.v1.worker.gpu_worker.Worker object at 0x7f293cf9c310>
+INFO 05-08 19:06:01 [parallel_state.py:1004] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, TP rank 0
+INFO 05-08 19:06:01 [cuda.py:221] Using Flash Attention backend on V1 engine.
+WARNING 05-08 19:06:01 [topk_topp_sampler.py:69] FlashInfer is not available. Falling back to the PyTorch-native implementation of top-p & top-k sampling. For the best performance, please install FlashInfer.
+INFO 05-08 19:06:01 [gpu_model_runner.py:1329] Starting to load model cais/HarmBench-Llama-2-13b-cls...
+INFO 05-08 19:06:02 [weight_utils.py:265] Using model weights format ['*.safetensors']
 Loading safetensors checkpoint shards:   0% Completed | 0/6 [00:00<?, ?it/s]
-Loading safetensors checkpoint shards:  17% Completed | 1/6 [00:00<00:02,  1.77it/s]
-Loading safetensors checkpoint shards:  33% Completed | 2/6 [00:01<00:02,  1.77it/s]
-Loading safetensors checkpoint shards:  50% Completed | 3/6 [00:01<00:01,  1.81it/s]
-Loading safetensors checkpoint shards:  67% Completed | 4/6 [00:02<00:01,  1.74it/s]
-Loading safetensors checkpoint shards:  83% Completed | 5/6 [00:02<00:00,  1.67it/s]
-Loading safetensors checkpoint shards: 100% Completed | 6/6 [00:03<00:00,  2.10it/s]
-Loading safetensors checkpoint shards: 100% Completed | 6/6 [00:03<00:00,  1.90it/s]
+Loading safetensors checkpoint shards:  17% Completed | 1/6 [00:00<00:02,  1.88it/s]
+Loading safetensors checkpoint shards:  33% Completed | 2/6 [00:01<00:02,  1.83it/s]
+Loading safetensors checkpoint shards:  50% Completed | 3/6 [00:01<00:01,  1.83it/s]
+Loading safetensors checkpoint shards:  67% Completed | 4/6 [00:02<00:01,  1.77it/s]
+Loading safetensors checkpoint shards:  83% Completed | 5/6 [00:02<00:00,  1.69it/s]
+Loading safetensors checkpoint shards: 100% Completed | 6/6 [00:03<00:00,  2.12it/s]
+Loading safetensors checkpoint shards: 100% Completed | 6/6 [00:03<00:00,  1.93it/s]
 
-INFO 05-02 10:50:54 [loader.py:458] Loading weights took 3.18 seconds
-INFO 05-02 10:50:54 [gpu_model_runner.py:1347] Model loading took 24.2836 GiB and 4.308775 seconds
-INFO 05-02 10:51:01 [backends.py:420] Using cache directory: /root/.cache/vllm/torch_compile_cache/c6b127ca0a/rank_0_0 for vLLM's torch.compile
-INFO 05-02 10:51:01 [backends.py:430] Dynamo bytecode transform time: 6.80 s
-INFO 05-02 10:51:08 [backends.py:118] Directly load the compiled graph(s) for shape None from the cache, took 6.501 s
-INFO 05-02 10:51:08 [monitor.py:33] torch.compile takes 6.80 s in total
-INFO 05-02 10:51:11 [kv_cache_utils.py:634] GPU KV cache size: 18,640 tokens
-INFO 05-02 10:51:11 [kv_cache_utils.py:637] Maximum concurrency for 2,048 tokens per request: 9.10x
-INFO 05-02 10:51:40 [gpu_model_runner.py:1686] Graph capturing finished in 29 secs, took 1.87 GiB
-INFO 05-02 10:51:40 [core.py:159] init engine (profile, create kv cache, warmup model) took 46.39 seconds
-INFO 05-02 10:51:40 [core_client.py:439] Core engine process 0 ready.
+INFO 05-08 19:06:06 [loader.py:458] Loading weights took 3.13 seconds
+INFO 05-08 19:06:06 [gpu_model_runner.py:1347] Model loading took 24.2836 GiB and 4.621818 seconds
+INFO 05-08 19:06:13 [backends.py:420] Using cache directory: /root/.cache/vllm/torch_compile_cache/c6b127ca0a/rank_0_0 for vLLM's torch.compile
+INFO 05-08 19:06:13 [backends.py:430] Dynamo bytecode transform time: 6.74 s
+INFO 05-08 19:06:20 [backends.py:118] Directly load the compiled graph(s) for shape None from the cache, took 6.184 s
+INFO 05-08 19:06:21 [monitor.py:33] torch.compile takes 6.74 s in total
+INFO 05-08 19:06:23 [kv_cache_utils.py:634] GPU KV cache size: 18,640 tokens
+INFO 05-08 19:06:23 [kv_cache_utils.py:637] Maximum concurrency for 2,048 tokens per request: 9.10x
+INFO 05-08 19:06:52 [gpu_model_runner.py:1686] Graph capturing finished in 29 secs, took 1.87 GiB
+INFO 05-08 19:06:52 [core.py:159] init engine (profile, create kv cache, warmup model) took 45.59 seconds
+INFO 05-08 19:06:52 [core_client.py:439] Core engine process 0 ready.
 🧐  Scoring …
-100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1600/1600 [03:58<00:00,  6.70it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████| 1600/1600 [04:14<00:00,  6.28it/s]
 
 📊 Results by Model and Category:
 ================================================================================
 
 📌 Model: LLAMA-AFTER-FINETUNE
-Overall ASR: 26.25% (420/1600)
+Overall ASR: 25.94% (415/1600)
 
 category breakdown:
   - terrorism: 23.00% (46/200)
@@ -48,8 +48,8 @@ category breakdown:
   - violence: 29.00% (58/200)
   - fraud: 34.50% (69/200)
   - religion: 39.00% (78/200)
-  - pornography_sexual_minors: 15.50% (31/200)
-  - race: 23.00% (46/200)
-  - politics: 32.00% (64/200)
+  - pornography_sexual_minors: 14.00% (28/200)
+  - race: 22.50% (45/200)
+  - politics: 31.50% (63/200)
 
 ✅ Evaluation complete!
