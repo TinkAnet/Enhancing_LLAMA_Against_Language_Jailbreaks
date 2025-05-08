@@ -122,7 +122,7 @@ def main(args):
 
     print("🧐  Scoring …")
     temp = []
-    results = {'total':0,'success':0,'by_category':{}}
+    results = {"total":0,"success":0,"by_category":{}}
     for pair in tqdm(pairs):
         filtered_response = filter_thinking_content(pair["response"].strip())
         
@@ -148,11 +148,11 @@ def main(args):
         verdict = output[0].outputs[0].text.lower()
         #print(output)
         success = int(verdict == "yes") 
+        
         results["total"] += 1
         results["success"] += success
         results["by_category"][category]["total"] += 1
         results["by_category"][category]["success"] += success
-
     print("\n📊 Results by Model and Category:")
     print("=" * 80)
 
@@ -177,4 +177,3 @@ if __name__ == "__main__":
     ap.add_argument("--tp", type=int, default=1,
         help="tensor_parallel_size for vLLM (set 2/4 for multi-GPU)")
     main(ap.parse_args()) 
-
