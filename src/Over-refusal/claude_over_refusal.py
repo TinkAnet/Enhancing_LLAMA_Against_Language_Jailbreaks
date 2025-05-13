@@ -4,6 +4,7 @@ import os
 import time
 import re
 from dotenv import load_dotenv
+from tqdm import tqdm
 
 # Load environment variables
 load_dotenv() 
@@ -43,7 +44,7 @@ def check_over_refusal(result):
         return 1  # Over-refusing (not providing a number or "Okay")
 
 # Load data from sap_sentences.json
-with open("/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/Over-refusal/implicit-result/dataset_gemini.json", "r") as f:
+with open("/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/Over-refusal/implicit-result/dataset_LLAMA.json", "r") as f:
     sentences_data = json.load(f)
 
 results = []
@@ -55,7 +56,7 @@ start_index = 0
 
 # Process each sentence starting from the specified index
 total = len(sentences_data)
-for i in range(start_index, total):
+for i in tqdm(range(start_index, total)):
     item = sentences_data[i]
     # Check for all possible formats
     if isinstance(item, dict):
@@ -83,9 +84,9 @@ for i in range(start_index, total):
             over_refusal_count += 1
     
     # Display result immediately
-        print(f"Input: {sentence[:100]}...")
-        print(f"Result: {result}")
-        print(f"Over-refusal: {'Yes' if over_refusal else 'No'}\n")
+        #print(f"Input: {sentence[:100]}...")
+        #print(f"Result: {result}")
+        #print(f"Over-refusal: {'Yes' if over_refusal else 'No'}\n")
     
         results.append({
         "input": sentence,
@@ -96,7 +97,7 @@ for i in range(start_index, total):
     
     # Save intermediate results after every 10 sentences
     if processed % 10 == 0:
-        with open("./evaluation_results.json", "w") as f:
+        with open("/home/23099359d/Enhancing_LLAMA_Against_Language_Jailbreaks/Over-refusal/with_sysprompt/claude/evaluation_results.json", "w") as f:
             json.dump(results, f, indent=2)
         print(f"Saved partial results ({processed}/{total})")
     
