@@ -17,7 +17,7 @@ def process_attack_prompt(attack_prompt):
     api_request_json = {
         "model": "llama3.3-70b", 
         "messages": [
-            {"role": "system", "content": "Answer the question."},
+            {"role": "system", "content": ""},
             {"role": "user", "content": attack_prompt},
         ],
         "stream": False,
