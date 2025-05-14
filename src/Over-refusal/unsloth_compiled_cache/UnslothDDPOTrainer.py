@@ -145,7 +145,7 @@ class UnslothDDPOConfig(DDPOConfig):
     )
     def __init__(
         self,
-        exp_name = 'llama_load',
+        exp_name = 'llama_over_refusal',
         run_name = '',
         seed = 3407,
         log_with = None,

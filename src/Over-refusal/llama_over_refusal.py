@@ -45,10 +45,12 @@ def generate_response(text,prompt):
         return_tensors="pt",
         tokenize=False,
     )
+    #print(type(input))
     inputs = tokenizer(input, return_tensors="pt").to('cuda')
-    outputs = model.generate(**inputs, max_new_tokens=100,temperature = 0)
+    outputs = model.generate(**inputs, max_new_tokens=100,temperature = 0.7)
     generate_text =  tokenizer.decode(outputs[0], skip_special_tokens=True)
     response_text = generate_text[len(prompt):]
+    #print(response_text)
     return response_text
 
 def is_refuse(result):
@@ -81,19 +83,23 @@ for item in data:
     text = item['input']
     ctr = 0
     for prompt in sysprompt:
+        item['system_prompt'] = prompt
         response = generate_response(text,prompt)
         processed += 1
         is_over_refusal = is_refuse(response)
+        print(f"response:{response},is_refuse:{is_over_refusal}")
         if is_over_refusal == 1:
             over_refusal_count += 1
             item['output'] = response
             item['category'] = category[ctr]
-        result.append(item)
+            print(item)
+            result.append(item)
         ctr += 1
     if processed % 10 == 0:
         with open(output_dir, "w") as f:
             json.dump(result, f, indent=4)
 with open(output_dir, "w") as f:
     json.dump(result, f, indent=4)
+
 
 
