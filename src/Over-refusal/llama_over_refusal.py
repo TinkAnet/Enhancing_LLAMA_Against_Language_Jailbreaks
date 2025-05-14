@@ -36,9 +36,17 @@ model, tokenizer = FastLanguageModel.from_pretrained(
 model = PeftModel.from_pretrained(model, "bebop404/my-lora-adapter")
 print("Complete loading the model and the LoRA adapter")
 
-def generate_response(prompt):
-    inputs = tokenizer(prompt, return_tensors="pt")
-    outputs = model.generate(**inputs, max_new_tokens=100)
+def generate_response(text,prompt):
+    inputs = tokenizer.apply_chat_template(
+        [
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": text},
+        ],
+        return_tensors="pt",
+        tokenize=True,
+    ).to('cuda')
+
+    outputs = model.generate(**inputs, max_new_tokens=100,temperature = 0)
     generate_text =  tokenizer.decode(outputs[0], skip_special_tokens=True)
     response_text = generate_text[len(prompt):]
     return response_text
