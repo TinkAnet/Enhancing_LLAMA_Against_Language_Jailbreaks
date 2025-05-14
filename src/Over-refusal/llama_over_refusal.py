@@ -37,25 +37,18 @@ model = PeftModel.from_pretrained(model, "bebop404/my-lora-adapter")
 print("Complete loading the model and the LoRA adapter")
 
 def generate_response(text,prompt):
-    inputs_dict = tokenizer.apply_chat_template(
+    input = tokenizer.apply_chat_template(
         [
             {"role": "system", "content": prompt},
             {"role": "user", "content": text},
         ],
         return_tensors="pt",
-        tokenize=True,
-    ).to('cuda')
-
-    input_ids = inputs_dict["input_ids"]
-    input_length = input_ids.shape[1]
-
-    outputs_token_ids = model.generate(**inputs_dict, max_new_tokens=100, temperature=0)
-    
-    # Extract only the generated tokens
-    generated_token_ids = outputs_token_ids[0][input_length:]
-    
-    # Decode the generated tokens to text
-    response_text = tokenizer.decode(generated_token_ids, skip_special_tokens=True)
+        tokenize=False,
+    )
+    inputs = tokenizer(input, return_tensors="pt").to('cuda')
+    outputs = model.generate(**inputs, max_new_tokens=100,temperature = 0)
+    generate_text =  tokenizer.decode(outputs[0], skip_special_tokens=True)
+    response_text = generate_text[len(prompt):]
     return response_text
 
 def is_refuse(result):
