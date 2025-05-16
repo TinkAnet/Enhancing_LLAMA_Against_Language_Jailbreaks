@@ -4,7 +4,7 @@ import os
 import time
 import re
 from dotenv import load_dotenv
-
+from tqdm import tqdm
 # Load environment variables
 load_dotenv() 
 API_KEY = os.getenv("api_key")  
@@ -91,7 +91,7 @@ start_index = 0
 
 # Process each sentence starting from the specified index
 total = len(sentences_data)
-for i in range(start_index, total):
+for i in tqdm(range(start_index, total)):
     item = sentences_data[i]
     # Check for all possible formats
     if isinstance(item, dict):
