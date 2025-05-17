@@ -92,65 +92,6 @@ adapter_name = "bebop404/my-lora-adapter"
 model = PeftModel.from_pretrained(model, adapter_name)
 ```
 
-## Usage Guide
-
-### Evaluation
-
-#### Baseline ASR Assessment
-
-Evaluate LLAMA's handling of harmful prompts using HarmBench:
-
-```bash
-# Set API key as environment variable
-export LLAMA_API_KEY="your_api_key_here"
-
-# Run evaluation
-python -m src.evaluation.harmbench.assess_asr
-```
-
-#### Position-Based Severity Scoring
-
-Apply the novel severity scoring system to analyze model outputs:
-
-```bash
-python -m src.evaluation.explicit.severity_scoring
-```
-
-### Running Fine-tuning
-
-Fine-tune LLAMA with LoRA adaptation:
-
-```bash
-python -m src.finetune.lora.fine_tune
-```
-
-Alternatively, explore the Jupyter notebook:
-
-```bash
-jupyter notebook notebooks/fine_tuning.ipynb
-```
-
-### Dual-Layer Filtering
-
-Test the dual-layer deployment architecture:
-
-```bash
-# For explicit-implicit filtering
-python -m src.deployment.explicit_implicit_filter
-
-# For implicit-explicit filtering
-python -m src.deployment.implicit_explicit_filter
-```
-
-### Analysis and Visualization
-
-Generate statistical analysis of results:
-
-```bash
-python -m src.analysis.asr_statistics     # For ASR analysis
-python -m src.analysis.overrefusal        # For over-refusal analysis
-```
-
 ## Results
 
 Our research demonstrates:
