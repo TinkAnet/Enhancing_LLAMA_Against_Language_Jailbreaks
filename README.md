@@ -1,4 +1,4 @@
-# Enhancing LLAMA Against Language Jailbreaks
+# Enhancing LLMs Against Language Jailbreaks
 
 [![HuggingFace Adversarial Dataset](https://img.shields.io/badge/🤗%20Dataset-Available-blue)](https://huggingface.co/datasets/bebop404/adversarial)
 [![HuggingFace Training Dataset](https://img.shields.io/badge/🤗%20Dataset-Available-blue)](https://huggingface.co/datasets/bebop404/llama_training)
@@ -6,74 +6,40 @@
 
 ## Project Overview
 
-This research project evaluates and enhances LLAMA's safety mechanisms against language jailbreaks using a novel three-stage framework:
-1. **Implicit Judgment**:  
-   We first conducted an implicit judgment test, where LLAMA responds to prompts without special intervention. On SAP200, LLAMA’s initial refusal rate reached 61.25%, indicating moderate alignment but also revealing vulnerabilities (e.g., responding helpfully to disguised or context-sensitive harmful queries). Understanding these weaknesses set the stage for more granular analysis.
+This research project evaluates and enhances LLAMA-3.3-70B's safety mechanisms against language jailbreaks, reducing its Attack Success Rate (ASR) through a comprehensive approach:
 
-2. **Explicit Judgment**:  
-   We introduced an explicit judgment mechanism involving two evaluation approaches. Prompts were evaluated using an LLM-based explicit judgment for their inherent harmfulness. Responses were assessed using both an LLM-based explicit judgment and a novel position-based severity scoring mechanism, enabling detailed insights into partial compliance or subtle policy violations. Critically, the explicit approach encapsulates the implicit phase—if the model refuses outright, no subsequent harm can surface. This layered design is well-suited for online deployment, where prompts pass through both implicit and explicit checks.
+1. **Baseline Evaluation via HarmBench**:  
+   We assessed LLAMA-3.3-70B using the SAP200 benchmark containing 1,600 harmful prompts across eight categories. The initial evaluation revealed significant vulnerabilities with an ASR of 44.34%, particularly with subtle, context-dependent prompts.
 
-3. **Fine-Tuning via LoRA**:  
-   To systematically address identified gaps, we curated adversarial and benign prompts and fine-tuned LLAMA using Low-Rank Adaptation (LoRA). The approach trains only a small set of additional parameters, preserving most of LLAMA’s original knowledge while reinforcing stricter filtering rules. The result is a more deterministic refusal mechanism that consistently flags and rejects harmful requests. The fine-tuned model is efficient to deploy in real time, suitable for production-scale services.
+2. **Explicit Judgment Framework**:  
+   We developed a novel position-based severity scoring system that segments responses into discrete units and evaluates them against policy guidelines. This system applies category-specific positional weighting to emphasize the location of harmful content, providing granular insights into subtle policy violations.
 
+3. **LoRA-Based Fine-Tuning**:  
+   We constructed a specialized dataset of 8.9k adversarial prompts (paired with safe refusals) and benign prompts in a 3:7 ratio. Using Low-Rank Adaptation (LoRA), we fine-tuned LLAMA-3.3-70B while preserving its general capabilities. This significantly reduced the ASR from 44.34% to 26.25%.
 
-The repository contains code, datasets, and evaluation results that systematically identify and address safety gaps in LLAMA's handling of harmful content.
+4. **Dual-Layer Deployment Architecture**:  
+   We proposed and evaluated two deployment strategies combining explicit and implicit safety mechanisms:
+   - **Explicit-Implicit Filtering**: An initial prompt-level filter blocks clearly malicious requests, followed by severity scoring on generated responses
+   - **Implicit-Explicit Filtering**: An initial response generation with immediate severity analysis, followed by more rigorous explicit filtering for borderline cases
+
+This multi-faceted approach effectively balances safety improvements with minimal impact on the model's utility for benign requests.
 
 ## Key Contributions
 
-- **Advanced Safety Evaluation Framework**:  
-  A two-phase (implicit and explicit) approach that offers granular insight into the model’s safety behavior.
+- **Comprehensive Baseline ASR Assessment**:  
+  A thorough vulnerability assessment of LLAMA-3.3-70B against harmful prompts from the SAP200 benchmark, establishing a clear baseline for improvement.
   
-- **Position-Based Severity Scoring**:  
-  A novel method that quantifies harmful content by considering not just its presence but also its position within the response.
+- **Novel Position-Based Severity Scoring System**:  
+  A nuanced method for quantifying harmful content that considers both its presence and position within responses, enabling precise measurement of model safety.
 
-- **LoRA-Based Fine-Tuning**:  
-  An efficient adaptation strategy that significantly improves LLAMA’s refusal behavior against both overt and subtle harmful prompts without degrading performance on benign queries.
+- **LoRA Fine-Tuning with Specialized Dataset**:  
+  A parameter-efficient fine-tuning approach using a carefully constructed dataset of adversarial and benign prompts in a 3:7 ratio, reducing overall ASR from 44.34% to 26.25%.
 
-- **Empirical Insights and Benchmarking**:  
-  Comprehensive evaluations on SAP200 and HarmBench benchmarks demonstrate dramatic improvements, underscoring the effectiveness of our approach.
+- **Dual-Layer Deployment Architecture**:  
+  Two practical deployment strategies combining explicit and implicit safety mechanisms, with the explicit filtering approach reducing ASR to as low as 0.68%.
 
-
-## Repository Structure
-
-```
-├── data/                                  # All data-related files
-│   ├── raw/                               # Raw datasets
-│   ├── processed/                         # Processed datasets
-│   └── benchmarks/                        # Benchmark datasets (SAP)
-│
-├── src/                                   # Source code
-│   ├── data/                              # Data processing utilities
-│   ├── evaluation/                        # Evaluation scripts
-│   │   ├── implicit/                      # Implicit judgment evaluation
-│   │   ├── explicit/                      # Explicit judgment evaluation
-│   │   └── utils/                         # Evaluation utilities
-│   ├── analysis/                          # Analysis scripts
-│   └── finetune/                          # Fine-tuning code
-│
-├── notebooks/                             # Jupyter notebooks
-│   ├── data_exploration.ipynb             # Dataset exploration
-│   ├── fine_tuning.ipynb                  # Fine-tuning experiments
-│   ├── model_loading.ipynb                # Loading and using models
-│   └── result_analysis.ipynb              # Results analysis
-│
-├── results/                               # All results
-│   ├── implicit_judgment/                 # Implicit judgment results
-│   ├── explicit_judgment/                 # Explicit judgment results
-│   ├── finetune/                          # Fine-tuning results
-│   ├── harmbench/                         # HarmBench evaluation results
-│   └── visualizations/                    # Visualization results
-│
-├── models/                                # Model checkpoints and configs
-│
-├── scripts/                               # Utility scripts
-│   └── setup.sh                           # Environment setup script
-│
-├── legacy/                                # Original project files (for reference)
-├── requirements.txt                       # Project dependencies
-├── LICENSE                                # License file
-└── README.md                              # Project documentation
-```
+- **Over-Refusal Assessment Framework**:  
+  A novel evaluation approach demonstrating our fine-tuned model achieves better balance between safety and utility, with the lowest over-refusal rate (37.85%) compared to Claude 3.5 Sonnet (64.71%) and Gemini 2.0 Flash (50.49%).
 
 ## Quick Start
 
@@ -97,11 +63,10 @@ The repository contains code, datasets, and evaluation results that systematical
    ./scripts/setup.sh
    ```
 
-
 ## Datasets and Models
 
 ### Adversarial Dataset
-An extensive collection of 8.87k jailbreak prompts covering various harmful content categories:
+An extensive collection of 8.9k jailbreak prompts covering various harmful content categories:
 - [HuggingFace Dataset: bebop404/adversarial](https://huggingface.co/datasets/bebop404/adversarial)
 
 ```python
@@ -131,24 +96,24 @@ model = PeftModel.from_pretrained(model, adapter_name)
 
 ### Evaluation
 
-#### Implicit Judgment
+#### Baseline ASR Assessment
 
-Evaluate LLAMA's unassisted handling of harmful prompts:
+Evaluate LLAMA's handling of harmful prompts using HarmBench:
 
 ```bash
 # Set API key as environment variable
 export LLAMA_API_KEY="your_api_key_here"
 
 # Run evaluation
-python -m src.evaluation.implicit.implicit_judgment_llama
+python -m src.evaluation.harmbench.assess_asr
 ```
 
-#### Explicit Judgment
+#### Position-Based Severity Scoring
 
-Apply structured reasoning to analyze model outputs:
+Apply the novel severity scoring system to analyze model outputs:
 
 ```bash
-python -m src.evaluation.explicit.explicit_judgment_llama
+python -m src.evaluation.explicit.severity_scoring
 ```
 
 ### Running Fine-tuning
@@ -165,46 +130,53 @@ Alternatively, explore the Jupyter notebook:
 jupyter notebook notebooks/fine_tuning.ipynb
 ```
 
+### Dual-Layer Filtering
+
+Test the dual-layer deployment architecture:
+
+```bash
+# For explicit-implicit filtering
+python -m src.deployment.explicit_implicit_filter
+
+# For implicit-explicit filtering
+python -m src.deployment.implicit_explicit_filter
+```
+
 ### Analysis and Visualization
 
 Generate statistical analysis of results:
 
 ```bash
-python -m src.analysis.statistic         # For implicit judgment
-python -m src.analysis.statistic_explicit # For explicit judgment
+python -m src.analysis.asr_statistics     # For ASR analysis
+python -m src.analysis.overrefusal        # For over-refusal analysis
 ```
-
 
 ## Results
 
-The research demonstrates:
-- Baseline Performance: LLAMA 3.3–70B shows high refusal rates for overtly harmful prompts (e.g., ~93% for explicit self-harm) but is vulnerable to subtle, nuanced queries (refusal rates as low as ~20–24% in certain categories).
-- Post Fine-Tuning Enhancements: After LoRA-based fine-tuning, overall refusal rates on the SAP200 benchmark increased dramatically (from 61.25% to 91.69%). Similar improvements were observed on the HarmBench benchmark, reflecting enhanced zero-shot defenses against unseen jailbreak attempts.
-- Robust Generalization: The fine-tuned model maintains strong performance on benign queries, ensuring that safety is improved without degrading general usefulness.
+Our research demonstrates:
+
+- **Baseline Performance**: LLAMA-3.3-70B initially showed an overall ASR of 44.34% on the SAP200 benchmark, with particularly high vulnerability in categories like violence (74.00%) and politics (66.50%).
+
+- **Post-Fine-Tuning**: After LoRA-based fine-tuning, the overall ASR decreased to 26.25%, with dramatic improvements in violence (reduced to 29.00%) and politics (reduced to 32.00%).
+
+- **Deployment Filters**: The explicit filtering pipeline achieved the most significant safety improvement, reducing ASR to just 0.68%, completely mitigating risk in categories like race, fraud, terrorism, politics, and violence.
+
+- **Over-Refusal Analysis**: Our fine-tuned model achieved the lowest over-refusal rate (37.85%) compared to Claude 3.5 Sonnet (64.71%) and Gemini 2.0 Flash (50.49%), demonstrating better balance between safety and utility.
 
 ## Troubleshooting
 
 - **CUDA Out of Memory**: Reduce batch size in fine-tuning notebooks
-- **API Rate Limits**: Add delay between API calls in judgment scripts
+- **API Rate Limits**: Add delay between API calls in evaluation scripts
 - **Missing Dependencies**: Check requirements.txt and install any missing packages
-
-## For Developers
-
-All original project files are preserved in the `legacy/` directory for reference. The new structure follows Python best practices and makes the codebase more maintainable and easier to navigate.
-
-To contribute:
-1. Create a feature branch from `main`
-2. Implement your changes following the project structure.
-3. Add tests if applicable
-4. Submit a pull request
 
 ## Citation
 
 If you use this work in your research, please cite:
 
 ```
-@misc{enhancing_llama_jailbreaks,
-  title = {Enhancing LLAMA Against Language Jailbreaks},
+@misc{enhancing_llms_jailbreaks,
+  title = {Enhancing LLMs Against Language Jailbreaks},
+  author = {Zhao, Letao and Wang, Jinghan and Lou, Wei},
   year = {2025},
   howpublished = {\url{https://github.com/TinkAnet/Enhancing_LLAMA-Against_Language_Jailbreaks}}
 }
@@ -212,7 +184,7 @@ If you use this work in your research, please cite:
 
 ## Acknowledgments
 
-This project was conducted as a capstone research project. Thanks to everyone who provided feedback and guidance.
+This project was conducted as part of research at the Department of Computing, The Hong Kong Polytechnic University. We thank all contributors for their valuable feedback and guidance.
 
 ## License
 
