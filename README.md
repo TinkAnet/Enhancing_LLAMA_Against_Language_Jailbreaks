@@ -15,12 +15,12 @@ This research project evaluates and enhances LLAMA-3.3-70B's safety mechanisms a
    We developed a novel position-based severity scoring system that segments responses into discrete units and evaluates them against policy guidelines. This system applies category-specific positional weighting to emphasize the location of harmful content, providing granular insights into subtle policy violations.
 
 3. **LoRA-Based Fine-Tuning**:  
-   We constructed a specialized dataset of 8.9k adversarial prompts (paired with safe refusals) and benign prompts in a 3:7 ratio. Using Low-Rank Adaptation (LoRA), we fine-tuned LLAMA-3.3-70B while preserving its general capabilities. This significantly reduced the ASR from 44.34% to 26.25%.
+   We constructed a specialized dataset of 29,600 instruction-response pairs, including 8,870 adversarial prompts (paired with safe refusals) and benign prompts in a balanced ratio. Using Low-Rank Adaptation (LoRA), we fine-tuned LLAMA-3.3-70B while preserving its general capabilities. This significantly reduced the ASR from 44.34% to 26.25%.
 
 4. **Dual-Layer Deployment Architecture**:  
    We proposed and evaluated two deployment strategies combining explicit and implicit safety mechanisms:
-   - **Explicit-Implicit Filtering**: An initial prompt-level filter blocks clearly malicious requests, followed by severity scoring on generated responses
-   - **Implicit-Explicit Filtering**: An initial response generation with immediate severity analysis, followed by more rigorous explicit filtering for borderline cases
+   - **Explicit Prompt Filter**: An initial prompt-level filter blocks clearly malicious requests, reducing ASR to just 0.68%
+   - **Implicit-Plus-Severity Filter**: Evaluates model outputs using a position-based severity scoring mechanism, reducing ASR to 25.93%
 
 This multi-faceted approach effectively balances safety improvements with minimal impact on the model's utility for benign requests.
 
@@ -33,7 +33,7 @@ This multi-faceted approach effectively balances safety improvements with minima
   A nuanced method for quantifying harmful content that considers both its presence and position within responses, enabling precise measurement of model safety.
 
 - **LoRA Fine-Tuning with Specialized Dataset**:  
-  A parameter-efficient fine-tuning approach using a carefully constructed dataset of adversarial and benign prompts in a 3:7 ratio, reducing overall ASR from 44.34% to 26.25%.
+  A parameter-efficient fine-tuning approach using a carefully constructed dataset of adversarial and benign prompts, reducing overall ASR from 44.34% to 26.25%.
 
 - **Dual-Layer Deployment Architecture**:  
   Two practical deployment strategies combining explicit and implicit safety mechanisms, with the explicit filtering approach reducing ASR to as low as 0.68%.
@@ -66,13 +66,17 @@ This multi-faceted approach effectively balances safety improvements with minima
 ## Datasets and Models
 
 ### Adversarial Dataset
-An extensive collection of 8.9k jailbreak prompts covering various harmful content categories:
+An extensive collection of 8,870 jailbreak prompts covering various harmful content categories:
 - [HuggingFace Dataset: bebop404/adversarial](https://huggingface.co/datasets/bebop404/adversarial)
 
 ```python
 from datasets import load_dataset
 dataset = load_dataset("bebop404/adversarial")
 ```
+
+### Training Dataset
+The full fine-tuning corpus with 29,600 instruction-response pairs:
+- [HuggingFace Dataset: bebop404/llama_training](https://huggingface.co/datasets/bebop404/llama_training)
 
 ### Fine-tuned Model
 A LoRA adapter for LLAMA-3.3-70B that enhances safety while preserving capabilities:
@@ -104,24 +108,13 @@ Our research demonstrates:
 
 - **Over-Refusal Analysis**: Our fine-tuned model achieved the lowest over-refusal rate (37.85%) compared to Claude 3.5 Sonnet (64.71%) and Gemini 2.0 Flash (50.49%), demonstrating better balance between safety and utility.
 
+- **Instruction Type Impact**: We observed significant variation in over-refusal rates depending on instruction type, with scoring instructions showing the lowest rates (0.13%-2.01%) and translation instructions showing the highest (92.87%-97.43%).
+
 ## Troubleshooting
 
 - **CUDA Out of Memory**: Reduce batch size in fine-tuning notebooks
 - **API Rate Limits**: Add delay between API calls in evaluation scripts
 - **Missing Dependencies**: Check requirements.txt and install any missing packages
-
-## Citation
-
-If you use this work in your research, please cite:
-
-```
-@misc{enhancing_llms_jailbreaks,
-  title = {Enhancing LLMs Against Language Jailbreaks},
-  author = {Zhao, Letao and Wang, Jinghan and Lou, Wei},
-  year = {2025},
-  howpublished = {\url{https://github.com/TinkAnet/Enhancing_LLAMA-Against_Language_Jailbreaks}}
-}
-```
 
 ## Acknowledgments
 
@@ -129,4 +122,4 @@ This project was conducted as part of research at the Department of Computing, T
 
 ## License
 
-This project is available under the [LICENSE](LICENSE) included in this repository. 
+This project is available under the [LICENSE](LICENSE) included in this repository.
