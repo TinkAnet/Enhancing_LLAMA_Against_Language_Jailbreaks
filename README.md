@@ -49,20 +49,6 @@ This multi-faceted approach effectively balances safety improvements with minima
 - Git
 - CUDA-compatible GPU (recommended for fine-tuning)
 
-### Installation
-
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/TinkAnet/Enhancing_LLAMA-Against_Language_Jailbreaks.git
-   cd Enhancing_LLAMA-Against_Language_Jailbreaks
-   ```
-
-2. Set up the environment using our setup script:
-   ```bash
-   chmod +x scripts/setup.sh
-   ./scripts/setup.sh
-   ```
-
 ## Datasets and Models
 
 ### Adversarial Dataset
@@ -115,10 +101,6 @@ Our research demonstrates:
 - **CUDA Out of Memory**: Reduce batch size in fine-tuning notebooks
 - **API Rate Limits**: Add delay between API calls in evaluation scripts
 - **Missing Dependencies**: Check requirements.txt and install any missing packages
-
-## Acknowledgments
-
-This project was conducted as part of research at the Department of Computing, The Hong Kong Polytechnic University. We thank all contributors for their valuable feedback and guidance.
 
 ## License
 
